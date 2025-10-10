@@ -371,7 +371,6 @@ function theme.at_screen_connect(s)
         { -- Right
             layout = wibox.layout.fixed.horizontal,
             wibox.widget.systray(),
-            keyboardlayout,
             spr,
             arrl_ld,
             wibox.container.background(volicon, theme.bg_focus),
