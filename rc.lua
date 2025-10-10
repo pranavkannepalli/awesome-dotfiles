@@ -271,8 +271,10 @@ globalkeys = mytable.join(
     awful.key({ "Control",           }, "space", function() naughty.destroy_all_notifications() end,
               {description = "destroy all notifications", group = "hotkeys"}),
     -- Take a screenshot
-    awful.key({ modkey, "Shift" }, "s", function() os.execute("spectacle") end,
-              {description = "open screenshot utility", group = "hotkeys"}),
+    awful.key({ "Mod4", "Shift" }, "s", function()
+        awful.spawn.with_shell("maim -s | xclip -selection clipboard -t image/png")
+    end, {description = "Screenshot area to clipboard", group = "utility"}),
+
 
     -- X screen locker
     awful.key({ altkey, "Control" }, "l", function () os.execute(scrlocker) end,
