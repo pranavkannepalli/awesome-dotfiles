@@ -441,10 +441,45 @@ globalkeys = mytable.join(
               {description = "show weather", group = "widgets"}),
 
     -- Screen brightness
-    awful.key({ }, "XF86MonBrightnessUp", function () os.execute("xbacklight -inc 10") end,
+    awful.key({  }, "XF86MonBrightnessUp", function () os.execute("xbacklight -inc 10") end,
               {description = "+10%", group = "hotkeys"}),
     awful.key({ }, "XF86MonBrightnessDown", function () os.execute("xbacklight -dec 10") end,
               {description = "-10%", group = "hotkeys"}),
+    awful.key({ }, "XF86AudioRaiseVolume",
+        function ()
+            os.execute(string.format("amixer -q set %s 1%%+", beautiful.volume.channel))
+            beautiful.volume.update()
+        end,
+        {description = "volume up", group = "hotkeys"}),
+    awful.key({ }, "XF86AudioLowerVolume",
+        function ()
+            os.execute(string.format("amixer -q set %s 1%%-", beautiful.volume.channel))
+            beautiful.volume.update()
+        end,
+        {description = "volume down", group = "hotkeys"}),
+    
+    awful.key({ }, "XF86AudioMute",
+        function ()
+            os.execute(string.format("amixer -q set %s toggle", beautiful.volume.channel))
+            beautiful.volume.update()
+        end,
+        {description = "toggle mute", group = "hotkeys"}),
+    awful.key({ }, "XF86AudioNext",
+        function ()
+            os.execute("playerctl -p playerctld next")
+        end,
+        {description = "next track", group = "hotkeys"}),
+
+    awful.key({ }, "XF86AudioPrev",
+        function ()
+            os.execute("playerctl -p playerctld previous")
+        end,
+        {description = "previous track", group = "hotkeys"}),
+    awful.key({ }, "XF86AudioPlayPause",
+        function ()
+            os.execute("playerctl -p playerctld play-pause")
+        end,
+        {description = "play/pause", group = "hotkeys"}),
 
     -- ALSA volume control
     awful.key({ altkey }, "Up",
