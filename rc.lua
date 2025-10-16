@@ -85,20 +85,6 @@ awful.spawn.with_shell(
 
 -- {{{ Variable definitions
 
-local themes = {
-    "blackburn",       -- 1
-    "copland",         -- 2
-    "dremora",         -- 3
-    "holo",            -- 4
-    "multicolor",      -- 5
-    "powerarrow",      -- 6
-    "powerarrow-dark", -- 7
-    "rainbow",         -- 8
-    "steamburn",       -- 9
-    "vertex"           -- 10
-}
-
-local chosen_theme = 'powerarrow-dark'
 local modkey       = "Mod4"
 local altkey       = "Mod1"
 local terminal     = "warp-terminal"
@@ -173,7 +159,7 @@ awful.util.tasklist_buttons = mytable.join(
      awful.button({ }, 5, function() awful.client.focus.byidx(-1) end)
 )
 
-beautiful.init(string.format("%s/.config/awesome/themes/%s/theme.lua", os.getenv("HOME"), chosen_theme))
+beautiful.init(string.format("%s/.config/awesome/%s/theme.lua", os.getenv("HOME"), 'kitts-theme'))
 
 -- }}}
 
