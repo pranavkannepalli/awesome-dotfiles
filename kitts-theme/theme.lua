@@ -69,6 +69,7 @@ theme.widget_mail_on                            = theme.dir .. "/icons/mail_on.p
 theme.tasklist_plain_task_name                  = true
 theme.tasklist_disable_icon                     = true
 theme.useless_gap                               = dpi(0)
+theme.show_battery                              = true
 theme.titlebar_close_button_focus               = theme.dir .. "/icons/titlebar/close_focus.png"
 theme.titlebar_close_button_normal              = theme.dir .. "/icons/titlebar/close_normal.png"
 theme.titlebar_ontop_button_focus_active        = theme.dir .. "/icons/titlebar/ontop_focus_active.png"
@@ -358,6 +359,53 @@ function theme.at_screen_connect(s)
     -- Wibox
     s.mywibox = awful.wibar({ position = "top", screen = s, height = dpi(18), bg = theme.bg_normal, fg = theme.fg_normal })
 
+    -- Build right widgets
+    local right_widgets = {
+        layout = wibox.layout.fixed.horizontal,
+        wibox.widget.systray(),
+        spr,
+    }
+
+    -- Battery (optional)
+    if theme.show_battery then
+        table.insert(right_widgets, baticon)
+        table.insert(right_widgets, bat.widget)
+    end
+
+    -- Volume
+    table.insert(right_widgets, arrl_ld)
+    table.insert(right_widgets, wibox.container.background(volicon, theme.bg_focus))
+    table.insert(right_widgets, wibox.container.background(theme.volume.widget, theme.bg_focus))
+
+    -- Memory
+    table.insert(right_widgets, arrl_dl)
+    table.insert(right_widgets, memicon)
+    table.insert(right_widgets, mem.widget)
+
+    -- CPU
+    table.insert(right_widgets, arrl_ld)
+    table.insert(right_widgets, wibox.container.background(cpuicon, theme.bg_focus))
+    table.insert(right_widgets, wibox.container.background(cpu.widget, theme.bg_focus))
+
+    -- Temperature
+    table.insert(right_widgets, arrl_dl)
+    table.insert(right_widgets, tempicon)
+    table.insert(right_widgets, temp.widget)
+
+    -- Network
+    table.insert(right_widgets, arrl_ld)
+    table.insert(right_widgets, wibox.container.background(neticon, theme.bg_focus))
+    table.insert(right_widgets, wibox.container.background(net.widget, theme.bg_focus))
+
+    -- Clock
+    table.insert(right_widgets, arrl_dl)
+    table.insert(right_widgets, clock)
+    table.insert(right_widgets, spr)
+
+    -- Layout box
+    table.insert(right_widgets, arrl_ld)
+    table.insert(right_widgets, wibox.container.background(s.mylayoutbox, theme.bg_focus))
+
     -- Setup widgets
     s.mywibox:setup {
         layout = wibox.layout.align.horizontal,
@@ -368,31 +416,7 @@ function theme.at_screen_connect(s)
             spr,
         },
         nil, -- Middle is empty
-        { -- Right
-            layout = wibox.layout.fixed.horizontal,
-            wibox.widget.systray(),
-            spr,
-            arrl_ld,
-            wibox.container.background(volicon, theme.bg_focus),
-            wibox.container.background(theme.volume.widget, theme.bg_focus),
-            arrl_dl,
-            memicon,
-            mem.widget,
-            arrl_ld,
-            wibox.container.background(cpuicon, theme.bg_focus),
-            wibox.container.background(cpu.widget, theme.bg_focus),
-            arrl_dl,
-            tempicon,
-            temp.widget,
-            arrl_ld,
-            wibox.container.background(neticon, theme.bg_focus),
-            wibox.container.background(net.widget, theme.bg_focus),
-            arrl_dl,
-            clock,
-            spr,
-            arrl_ld,
-            wibox.container.background(s.mylayoutbox, theme.bg_focus),
-        },
+        right_widgets,
     }
 
     -- Centered overlay clock
@@ -405,7 +429,7 @@ function theme.at_screen_connect(s)
 
     s.centerclockbox = wibox({
         screen  = s,
-        width   = 160,
+        width   = 200,
         height  = dpi(18),
         x       = s.geometry.x + (s.geometry.width / 2) - 80,
         y       = s.geometry.y,
