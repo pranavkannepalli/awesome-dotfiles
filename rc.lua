@@ -258,7 +258,7 @@ globalkeys = mytable.join(
               {description = "destroy all notifications", group = "hotkeys"}),
     -- Take a screenshot
     awful.key({ "Mod4", "Shift" }, "s", function()
-        awful.spawn.with_shell("maim -s | xclip -selection clipboard -t image/png")
+        awful.spawn.with_shell("maim -s | tee ~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png | xclip -selection clipboard -t image/png")
     end, {description = "Screenshot area to clipboard", group = "utility"}),
 
 
