@@ -24,6 +24,12 @@ local hotkeys_popup = require("awful.hotkeys_popup")
                       require("awful.hotkeys_popup.keys")
 local mytable       = awful.util.table or gears.table -- 4.{0,1} compatibility
 
+-- Load monitor configuration (machine-specific)
+local monitors_ok, monitors = pcall(require, "monitors")
+if monitors_ok then
+    monitors.setup()
+end
+
 -- }}}
 
 -- {{{ Error handling
