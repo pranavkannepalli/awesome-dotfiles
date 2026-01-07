@@ -276,11 +276,21 @@ globalkeys = mytable.join(
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
               {description="show help", group="awesome"}),
 
-    -- Tag browsing
-    awful.key({ modkey, "Control" }, "Left",   awful.tag.viewprev,
-              {description = "view previous", group = "tag"}),
-    awful.key({ modkey, "Control" }, "Right",  awful.tag.viewnext,
-              {description = "view next", group = "tag"}),
+    -- Tag browsing (synchronized across all screens)
+    awful.key({ modkey, "Control" }, "Left",
+        function ()
+            for s in screen do
+                awful.tag.viewprev(s)
+            end
+        end,
+        {description = "view previous on all screens", group = "tag"}),
+    awful.key({ modkey, "Control" }, "Right",
+        function ()
+            for s in screen do
+                awful.tag.viewnext(s)
+            end
+        end,
+        {description = "view next on all screens", group = "tag"}),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore,
               {description = "go back", group = "tag"}),
 
@@ -657,26 +667,28 @@ clientkeys = mytable.join(
 -- This should map on the top row of your keyboard, usually 1 to 9.
 for i = 1, 9 do
     globalkeys = mytable.join(globalkeys,
-        -- View tag only.
+        -- View tag only (synchronized across all screens).
         awful.key({ modkey }, "#" .. i + 9,
                   function ()
-                        local screen = awful.screen.focused()
-                        local tag = screen.tags[i]
-                        if tag then
-                           tag:view_only()
+                        for s in screen do
+                            local tag = s.tags[i]
+                            if tag then
+                               tag:view_only()
+                            end
                         end
                   end,
-                  {description = "view tag #"..i, group = "tag"}),
-        -- Toggle tag display.
+                  {description = "view tag #"..i.." on all screens", group = "tag"}),
+        -- Toggle tag display (synchronized across all screens).
         awful.key({ modkey, "Control" }, "#" .. i + 9,
                   function ()
-                      local screen = awful.screen.focused()
-                      local tag = screen.tags[i]
-                      if tag then
-                         awful.tag.viewtoggle(tag)
+                      for s in screen do
+                          local tag = s.tags[i]
+                          if tag then
+                             awful.tag.viewtoggle(tag)
+                          end
                       end
                   end,
-                  {description = "toggle tag #" .. i, group = "tag"}),
+                  {description = "toggle tag #" .. i .. " on all screens", group = "tag"}),
         -- Move client to tag.
         awful.key({ modkey, "Shift" }, "#" .. i + 9,
                   function ()
