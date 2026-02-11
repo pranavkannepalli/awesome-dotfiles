@@ -24,6 +24,27 @@ theme.fg_urgent                                 = "#CC9393"
 theme.bg_normal                                 = "#1A1A1A"
 theme.bg_focus                                  = "#313131"
 theme.bg_urgent                                 = "#1A1A1A"
+
+-- ===================================================================
+-- Notification Theme (naughty)
+-- ===================================================================
+theme.notification_font                         = "Terminus 10"
+theme.notification_bg                           = "#1E1E2E"
+theme.notification_fg                           = "#CDD6F4"
+theme.notification_border_width                 = dpi(2)
+theme.notification_border_color                 = "#45475A"
+theme.notification_shape                        = function(cr, w, h) gears.shape.rounded_rect(cr, w, h, dpi(12)) end
+theme.notification_margin                       = dpi(12)
+theme.notification_max_width                    = dpi(400)
+theme.notification_max_height                   = dpi(200)
+theme.notification_icon_size                    = dpi(48)
+theme.notification_spacing                      = dpi(10)
+theme.notification_opacity                      = 0.95
+
+-- Critical notifications (errors)
+theme.notification_critical_bg                  = "#1E1E2E"
+theme.notification_critical_fg                  = "#F38BA8"
+theme.notification_critical_border_color        = "#F38BA8"
 theme.border_width                              = dpi(1)
 theme.border_normal                             = "#3F3F3F"
 theme.border_focus                              = "#7F7F7F"

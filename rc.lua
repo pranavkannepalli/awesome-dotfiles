@@ -169,6 +169,158 @@ beautiful.init(string.format("%s/.config/awesome/%s/theme.lua", os.getenv("HOME"
 
 -- }}}
 
+-- {{{ Notification Configuration (naughty)
+
+local dpi = require("beautiful.xresources").apply_dpi
+
+-- Default notification settings
+naughty.config.defaults = {
+    timeout = 5,
+    text = "",
+    ontop = true,
+    margin = dpi(12),
+    border_width = beautiful.notification_border_width or dpi(2),
+    position = "top_right",
+    shape = beautiful.notification_shape,
+    icon_size = dpi(48),
+    max_width = dpi(400),
+    max_height = dpi(200),
+}
+
+-- Preset configurations
+naughty.config.presets.low = {
+    font = beautiful.notification_font or "Terminus 10",
+    fg = "#A6ADC8",
+    bg = beautiful.notification_bg or "#1E1E2E",
+    border_color = "#585B70",
+    timeout = 3,
+    icon_size = dpi(48),
+}
+
+naughty.config.presets.normal = {
+    font = beautiful.notification_font or "Terminus 10",
+    fg = beautiful.notification_fg or "#CDD6F4",
+    bg = beautiful.notification_bg or "#1E1E2E",
+    border_color = beautiful.notification_border_color or "#45475A",
+    timeout = 5,
+    icon_size = dpi(48),
+}
+
+naughty.config.presets.critical = {
+    font = beautiful.notification_font or "Terminus 10",
+    fg = beautiful.notification_critical_fg or "#F38BA8",
+    bg = beautiful.notification_critical_bg or "#1E1E2E",
+    border_color = beautiful.notification_critical_border_color or "#F38BA8",
+    timeout = 0,
+    icon_size = dpi(48),
+}
+
+-- Icon directories
+naughty.config.icon_dirs = {
+    "/usr/share/icons/Papirus-Dark/48x48/apps/",
+    "/usr/share/icons/Papirus/48x48/apps/",
+    "/usr/share/icons/hicolor/48x48/apps/",
+    "/usr/share/pixmaps/",
+}
+naughty.config.icon_formats = { "png", "svg" }
+
+-- Custom notification display (AwesomeWM 4.3+ with fallback)
+if naughty.connect_signal and naughty.layout and naughty.layout.box then
+    naughty.connect_signal("request::display", function(n)
+        -- Determine colors based on urgency
+        local accent_color = "#89B4FA"
+        local bg_color = beautiful.notification_bg or "#1E1E2E"
+        local fg_color = beautiful.notification_fg or "#CDD6F4"
+        local border_color = beautiful.notification_border_color or "#45475A"
+
+        if n.urgency == "critical" then
+            accent_color = "#F38BA8"
+            fg_color = beautiful.notification_critical_fg or "#F38BA8"
+            border_color = beautiful.notification_critical_border_color or "#F38BA8"
+        elseif n.urgency == "low" then
+            accent_color = "#A6E3A1"
+            fg_color = "#A6ADC8"
+            border_color = "#585B70"
+        end
+
+        naughty.layout.box {
+            notification = n,
+            type = "notification",
+            shape = beautiful.notification_shape,
+            border_width = beautiful.notification_border_width or dpi(2),
+            border_color = border_color,
+            maximum_width = beautiful.notification_max_width or dpi(400),
+            maximum_height = beautiful.notification_max_height or dpi(200),
+            widget_template = {
+                {
+                    {
+                        widget = wibox.container.background,
+                        bg = accent_color,
+                        forced_width = dpi(4),
+                    },
+                    {
+                        {
+                            {
+                                {
+                                    {
+                                        image = n.icon,
+                                        resize = true,
+                                        clip_shape = function(cr, w, h) gears.shape.rounded_rect(cr, w, h, dpi(4)) end,
+                                        widget = wibox.widget.imagebox,
+                                    },
+                                    strategy = "max",
+                                    width = dpi(48),
+                                    height = dpi(48),
+                                    widget = wibox.container.constraint,
+                                },
+                                margins = dpi(10),
+                                widget = wibox.container.margin,
+                            },
+                            {
+                                {
+                                    {
+                                        markup = n.app_name and ("<span weight='bold' size='small' foreground='" .. accent_color .. "'>" .. n.app_name:upper() .. "</span>") or "",
+                                        align = "left",
+                                        widget = wibox.widget.textbox,
+                                    },
+                                    {
+                                        markup = "<span weight='bold'>" .. (n.title or "") .. "</span>",
+                                        align = "left",
+                                        font = beautiful.notification_font or "Terminus 10",
+                                        widget = wibox.widget.textbox,
+                                    },
+                                    {
+                                        text = n.message or "",
+                                        align = "left",
+                                        font = beautiful.notification_font or "Terminus 10",
+                                        widget = wibox.widget.textbox,
+                                    },
+                                    spacing = dpi(4),
+                                    layout = wibox.layout.fixed.vertical,
+                                },
+                                margins = { top = dpi(10), bottom = dpi(10), right = dpi(14) },
+                                widget = wibox.container.margin,
+                            },
+                            layout = wibox.layout.fixed.horizontal,
+                        },
+                        strategy = "max",
+                        width = (beautiful.notification_max_width or dpi(400)) - dpi(4),
+                        height = beautiful.notification_max_height or dpi(200),
+                        widget = wibox.container.constraint,
+                    },
+                    layout = wibox.layout.fixed.horizontal,
+                },
+                bg = bg_color,
+                fg = fg_color,
+                shape = beautiful.notification_shape,
+                widget = wibox.container.background,
+            },
+        }
+    end)
+end
+
+-- }}}
+
 -- {{{ Menu
 
 -- Create a launcher widget and a main menu
