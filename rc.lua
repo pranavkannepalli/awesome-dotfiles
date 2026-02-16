@@ -94,7 +94,7 @@ awful.spawn.with_shell(
 -- Helper function to identify the small screen
 local function get_small_screen()
     for s in screen do
-        if s.geometry.width == 1920 and s.geometry.height == 1200 then
+        if is_small_screen(s) then
             return s
         end
     end
@@ -102,7 +102,7 @@ local function get_small_screen()
 end
 
 local function is_small_screen(s)
-    return s.geometry.width == 1920 and s.geometry.height == 1200
+    return (s.geometry.width == 1920 and s.geometry.height == 1200) or (s.geometry.width == 1200 and s.geometry.height == 800)
 end
 
 local modkey       = "Mod4"

@@ -18,7 +18,7 @@ function monitors.setup()
     -- This allows moving down anywhere on the larger screen to reach the smaller screen
     awful.spawn.with_shell([[
         xrandr \
-            --output DP-0 --mode 3840x2160 --rate 59.95 --pos 0x0 \
+            --output DP-2 --mode 3840x2160 --rate 59.95 --pos 0x0 \
             --output HDMI-1 --primary --mode 1280x800 --scale 1.5x1.5 --rate 59.99 --pos 1280x2160
     ]])
 end
