@@ -74,7 +74,7 @@ local function run_once(cmd_arr)
     end
 end
 
-run_once({ "urxvtd", "unclutter -root" }) -- comma-separated entries
+run_once({ "urxvtd", "unclutter -root", "beeper", "spotify" }) -- comma-separated entries
 
 -- This function implements the XDG autostart specification
 --[[
@@ -90,6 +90,20 @@ awful.spawn.with_shell(
 -- }}}
 
 -- {{{ Variable definitions
+
+-- Helper function to identify the small screen
+local function get_small_screen()
+    for s in screen do
+        if s.geometry.width == 1920 and s.geometry.height == 1200 then
+            return s
+        end
+    end
+    return screen.primary
+end
+
+local function is_small_screen(s)
+    return s.geometry.width == 1920 and s.geometry.height == 1200
+end
 
 local modkey       = "Mod4"
 local altkey       = "Mod1"
@@ -428,21 +442,25 @@ globalkeys = mytable.join(
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
               {description="show help", group="awesome"}),
 
-    -- Tag browsing (synchronized across all screens)
+    -- Tag browsing (synchronized across all screens except small screen)
     awful.key({ modkey, "Control" }, "Left",
         function ()
             for s in screen do
-                awful.tag.viewprev(s)
+                if not is_small_screen(s) then
+                    awful.tag.viewprev(s)
+                end
             end
         end,
-        {description = "view previous on all screens", group = "tag"}),
+        {description = "view previous on all screens (except small)", group = "tag"}),
     awful.key({ modkey, "Control" }, "Right",
         function ()
             for s in screen do
-                awful.tag.viewnext(s)
+                if not is_small_screen(s) then
+                    awful.tag.viewnext(s)
+                end
             end
         end,
-        {description = "view next on all screens", group = "tag"}),
+        {description = "view next on all screens (except small)", group = "tag"}),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore,
               {description = "go back", group = "tag"}),
 
@@ -819,28 +837,32 @@ clientkeys = mytable.join(
 -- This should map on the top row of your keyboard, usually 1 to 9.
 for i = 1, 9 do
     globalkeys = mytable.join(globalkeys,
-        -- View tag only (synchronized across all screens).
+        -- View tag only (synchronized across all screens except small screen).
         awful.key({ modkey }, "#" .. i + 9,
                   function ()
                         for s in screen do
-                            local tag = s.tags[i]
-                            if tag then
-                               tag:view_only()
+                            if not is_small_screen(s) then
+                                local tag = s.tags[i]
+                                if tag then
+                                   tag:view_only()
+                                end
                             end
                         end
                   end,
-                  {description = "view tag #"..i.." on all screens", group = "tag"}),
-        -- Toggle tag display (synchronized across all screens).
+                  {description = "view tag #"..i.." on all screens (except small)", group = "tag"}),
+        -- Toggle tag display (synchronized across all screens except small screen).
         awful.key({ modkey, "Control" }, "#" .. i + 9,
                   function ()
                       for s in screen do
-                          local tag = s.tags[i]
-                          if tag then
-                             awful.tag.viewtoggle(tag)
+                          if not is_small_screen(s) then
+                              local tag = s.tags[i]
+                              if tag then
+                                 awful.tag.viewtoggle(tag)
+                              end
                           end
                       end
                   end,
-                  {description = "toggle tag #" .. i .. " on all screens", group = "tag"}),
+                  {description = "toggle tag #" .. i .. " on all screens (except small)", group = "tag"}),
         -- Move client to tag.
         awful.key({ modkey, "Shift" }, "#" .. i + 9,
                   function ()
@@ -943,6 +965,50 @@ awful.rules.rules = {
     -- Set Firefox to always map on the tag named "2" on screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { screen = 1, tag = "2" } },
+
+    -- Spotify: Open on the small screen in tiling mode
+    { rule = { class = "Spotify" },
+      properties = {
+        maximized = false,
+        fullscreen = false,
+        floating = false
+      },
+      callback = function(c)
+        local small = get_small_screen()
+        if small then
+            naughty.notify({ text = "Moving Spotify to small screen (ID: " .. small.index .. ")" })
+            c:move_to_screen(small)
+            local tag = small.tags[1]
+            if tag then
+                c:move_to_tag(tag)
+            end
+        else
+            naughty.notify({ text = "Could not find small screen for Spotify!" })
+        end
+      end
+    },
+
+    -- Beeper: Open on the small screen next to Spotify
+    { rule_any = { class = { "Beeper", "beeper" } },
+      properties = {
+        maximized = false,
+        fullscreen = false,
+        floating = false
+      },
+      callback = function(c)
+        local small = get_small_screen()
+        if small then
+            naughty.notify({ text = "Moving Beeper to small screen (ID: " .. small.index .. ")" })
+            c:move_to_screen(small)
+            local tag = small.tags[1]
+            if tag then
+                c:move_to_tag(tag)
+            end
+        else
+            naughty.notify({ text = "Could not find small screen for Beeper!" })
+        end
+      end
+    },
 }
 
 -- }}}
